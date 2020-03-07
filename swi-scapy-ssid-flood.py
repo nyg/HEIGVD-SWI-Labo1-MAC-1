@@ -6,33 +6,35 @@ import sys
 from scapy.layers.dot11 import Dot11, Dot11Beacon, Dot11Elt, RadioTap
 from scapy.sendrecv import sendp
 
-interface = 'en0'
+IFACE_ARG = 1
+SSID_ARG = 2
 
 
 # print usage and quit
 def print_usage():
-    print('Usage: ssid-flood.py <ssid-file | ssid-count>')
+    print('Usage: ssid-flood.py <interface> <ssid-file | ssid-count>')
+    print('         interface:  the interface from which to send the beacons')
     print('         ssid-file:  file with a list of SSIDs (one per line)')
     print('         ssid-count: a number of SSIDs to generate')
     sys.exit(1)
 
 
-if len(sys.argv) != 2:
+if len(sys.argv) != 3:
     print_usage()
 
 ssids = []
 
 # the first argument is a file with a list of ssid
-if os.path.isfile(sys.argv[1]):
-    with open(sys.argv[1]) as file:
+if os.path.isfile(sys.argv[SSID_ARG]):
+    with open(sys.argv[SSID_ARG]) as file:
         for ssid in file:
             ssids.append(ssid.strip())
 
 # the first argument is the number of ssid to generate
 else:
     try:
-        count = int(sys.argv[1])
-        for i in range(0, int(sys.argv[1])):
+        count = int(sys.argv[SSID_ARG])
+        for i in range(0, int(sys.argv[SSID_ARG])):
             ssids.append(''.join(random.choices(string.ascii_letters, k=9)))
     except ValueError:
         print_usage()
@@ -41,7 +43,7 @@ else:
 # inspiration https://www.4armed.com/blog/forging-wifi-beacon-frames-using-scapy/
 
 def random_mac():
-    return ':'.join('%02x' % random.randrange(256) for _ in range(5))
+    return ':'.join('%02x' % random.randrange(256) for _ in range(6))
 
 
 # common frame values
@@ -69,15 +71,12 @@ def broadcast_ssids(ssids):
     :param ssids: an array of SSIDs
     """
 
-    # frame.show()
-    # print("\nHexdump of frame:")
-    # hexdump(frame)
-
     # create a frame for each SSID
     frames = [create_frame(ssid) for ssid in ssids]
+    [f.show() for f in frames]
 
     # send all frames repeatedly
-    sendp(frames, iface=interface, inter=0.100, loop=1, monitor=True, verbose=True)
+    sendp(frames, iface=sys.argv[IFACE_ARG], inter=0.100, loop=1, monitor=True, verbose=True, realtime=True)
 
 
 def create_frame(ssid):
