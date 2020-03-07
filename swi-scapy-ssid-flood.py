@@ -6,12 +6,14 @@ import sys
 from scapy.layers.dot11 import Dot11, Dot11Beacon, Dot11Elt, RadioTap
 from scapy.sendrecv import sendp
 
-interface = 'wlp0s20f0u1mon'
+interface = 'en0'
 
 
 # print usage and quit
 def print_usage():
     print('Usage: ssid-flood.py <ssid-file | ssid-count>')
+    print('         ssid-file:  file with a list of SSIDs (one per line)')
+    print('         ssid-count: a number of SSIDs to generate')
     sys.exit(1)
 
 
@@ -35,14 +37,19 @@ else:
     except ValueError:
         print_usage()
 
+
 # inspiration https://www.4armed.com/blog/forging-wifi-beacon-frames-using-scapy/
+
+def random_mac():
+    return ':'.join('%02x' % random.randrange(256) for _ in range(5))
+
 
 # common frame values
 dot11 = Dot11(type=0,  # management frame
               subtype=8,  # beacon
               addr1='ff:ff:ff:ff:ff:ff',  # destination MAC address, i.e. broadcast
-              addr2='22:22:22:22:22:22',  # MAC address of sender
-              addr3='33:33:33:33:33:33')  # MAC address of AP
+              addr2=random_mac(),  # MAC address of sender
+              addr3=random_mac())  # MAC address of AP
 beacon = Dot11Beacon(cap='ESS+privacy')
 rsn = Dot11Elt(ID='RSNinfo', info=(
     '\x01\x00'  # RSN Version 1
