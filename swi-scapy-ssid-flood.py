@@ -1,10 +1,9 @@
 import os
-import random
-import string
 import sys
 
 from scapy.layers.dot11 import Dot11, Dot11Beacon, Dot11Elt, RadioTap
 from scapy.sendrecv import sendp
+from scapy.volatile import RandString, RandMAC
 
 IFACE_ARG = 1
 SSID_ARG = 2
@@ -35,23 +34,14 @@ else:
     try:
         count = int(sys.argv[SSID_ARG])
         for i in range(0, int(sys.argv[SSID_ARG])):
-            ssids.append(''.join(random.choices(string.ascii_letters, k=9)))
+            ssids.append(str(RandString(size=9)))
     except ValueError:
         print_usage()
 
-
 # inspiration https://www.4armed.com/blog/forging-wifi-beacon-frames-using-scapy/
-
-def random_mac():
-    return ':'.join('%02x' % random.randrange(256) for _ in range(6))
 
 
 # common frame values
-dot11 = Dot11(type=0,  # management frame
-              subtype=8,  # beacon
-              addr1='ff:ff:ff:ff:ff:ff',  # destination MAC address, i.e. broadcast
-              addr2=random_mac(),  # MAC address of sender
-              addr3=random_mac())  # MAC address of AP
 beacon = Dot11Beacon(cap='ESS+privacy')
 rsn = Dot11Elt(ID='RSNinfo', info=(
     '\x01\x00'  # RSN Version 1
@@ -73,7 +63,7 @@ def broadcast_ssids(ssids):
 
     # create a frame for each SSID
     frames = [create_frame(ssid) for ssid in ssids]
-    [f.show() for f in frames]
+    [f.show2() for f in frames]
 
     # send all frames repeatedly
     sendp(frames, iface=sys.argv[IFACE_ARG], inter=0.100, loop=1, monitor=True, verbose=True, realtime=True)
@@ -86,8 +76,18 @@ def create_frame(ssid):
     :param ssid: the SSID to create the frame for
     :return: the created frame
     """
+
+    mac_address = RandMAC()
+    dot11 = Dot11(type=0,  # management frame
+                  subtype=8,  # beacon
+                  addr1='ff:ff:ff:ff:ff:ff',  # destination MAC address, i.e. broadcast
+                  addr2=mac_address,  # MAC address of sender
+                  addr3=mac_address)  # MAC address of AP
+
     essid = Dot11Elt(ID='SSID', info=ssid, len=len(ssid))
-    return RadioTap() / dot11 / beacon / essid / rsn
+
+    # return RadioTap() / dot11 / beacon / essid / rsn
+    return RadioTap() / dot11 / Dot11Beacon() / essid
 
 
 print('SSIDs:', ssids)
