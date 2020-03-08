@@ -66,7 +66,7 @@ def broadcast_ssids(ssids):
     [f.show2() for f in frames]
 
     # send all frames repeatedly
-    sendp(frames, iface=sys.argv[IFACE_ARG], inter=0.100, loop=1, monitor=True, verbose=True, realtime=True)
+    sendp(frames, iface=sys.argv[IFACE_ARG], inter=0.01, loop=1, monitor=True, verbose=True, realtime=True)
 
 
 def create_frame(ssid):

