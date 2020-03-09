@@ -37,16 +37,16 @@ else:
 # inspiration https://www.4armed.com/blog/forging-wifi-beacon-frames-using-scapy/
 
 # common frame values
-# beacon = Dot11Beacon(cap='ESS+privacy')
-# rsn = Dot11Elt(ID='RSNinfo', info=(
-#     '\x01\x00'  # RSN Version 1
-#     '\x00\x0f\xac\x02'  # Group Cipher Suite : 00-0f-ac TKIP
-#     '\x02\x00'  # 2 Pairwise Cipher Suites (next two lines)
-#     '\x00\x0f\xac\x04'  # AES Cipher
-#     '\x00\x0f\xac\x02'  # TKIP Cipher
-#     '\x01\x00'  # 1 Authentication Key Managment Suite (line below)
-#     '\x00\x0f\xac\x02'  # Pre-Shared Key
-#     '\x00\x00'))  # RSN Capabilities (no extra capabilities)
+beacon = Dot11Beacon(cap='ESS+privacy')
+rsn = Dot11Elt(ID='RSNinfo', info=(
+    '\x01\x00'  # RSN Version 1
+    '\x00\x0f\xac\x02'  # Group Cipher Suite : 00-0f-ac TKIP
+    '\x02\x00'  # 2 Pairwise Cipher Suites (next two lines)
+    '\x00\x0f\xac\x04'  # AES Cipher
+    '\x00\x0f\xac\x02'  # TKIP Cipher
+    '\x01\x00'  # 1 Authentication Key Managment Suite (line below)
+    '\x00\x0f\xac\x02'  # Pre-Shared Key
+    '\x00\x00'))  # RSN Capabilities (no extra capabilities)
 
 
 def broadcast_ssids(ssids):
@@ -58,7 +58,7 @@ def broadcast_ssids(ssids):
 
     # create a frame for each SSID
     frames = [create_frame(ssid) for ssid in ssids]
-    [f.show2() for f in frames]
+    [print(f.summary()) for f in frames]
 
     # send all frames repeatedly
     sendp(frames, iface=sys.argv[IFACE_ARG], inter=0.01, loop=1, monitor=True, verbose=True, realtime=True)
@@ -81,8 +81,7 @@ def create_frame(ssid):
 
     essid = Dot11Elt(ID='SSID', info=ssid, len=len(ssid))
 
-    # return RadioTap() / dot11 / beacon / essid / rsn
-    return RadioTap() / dot11 / Dot11Beacon() / essid
+    return RadioTap() / dot11 / beacon / essid / rsn
 
 
 print('SSIDs:', ssids)
