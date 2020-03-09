@@ -1,3 +1,6 @@
+'''
+This scrippt needs airodump-ng started, to have some channel hopping.
+'''
 from scapy.all import *
 import signal
 
