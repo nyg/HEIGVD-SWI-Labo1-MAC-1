@@ -4,23 +4,29 @@
 
 > Quel code est utilisé par aircrack pour déauthentifier un client 802.11. Quelle est son interpretation ?
 
-Le code utilisé est le 7 « Class 3 frame received from nonassociated station ».
+Le code utilisé est le 7 « Class 3 frame received from nonassociated station ». Une frame de classe 3 est envoyée lors de l'état 3, c'est-à-dire lorsqu'une station a été associée et authentifiée. On a donc une telle frame mais reçue par une station non-associée (probablement car la station se déconnecte d'abord puis en informe l'AP).
+
+[Source](https://flylib.com/books/en/2.519.1/frame_transmission_and_association_and_authentication_states.html)
 
 > À l'aide d'un filtre d'affichage, essayer de trouver d'autres trames de déauthentification dans votre capture. Avez-vous en trouvé d'autres ? Si oui, quel code contient-elle et quelle est son interpretation ?
 
-Avec Wireshark on peut utiliser le filtre suivant: `(wlan.fc.type eq 0) && (wlan.fc.type_subtype eq 12)`. On a trouvé les codes 3 (réseau quitté volontairement) et 4 (réseau quitté à cause d'inactivité).
+Avec Wireshark on peut utiliser le filtre suivant: `(wlan.fc.type eq 0) && (wlan.fc.type_subtype eq 12)`. On a trouvé les codes 3 (désassociation volontairement de la station) et 4 (station déconnectée par l'AP pour inactivité).
 
 > Quels codes/raisons justifient l'envoie de la trame à la STA cible et pourquoi ?
 
-1, 4, 5
+Les codes 1, 4 et 5.
+
+* Le code 1 (Unspecified) fonctionne dans les deux sens, la raison est inconnue.
+* Le code 4 informe la station qu'elle a été déconnectée par l'AP à cause de son inactivité.
+* Le code 5 informe la station qu'elle a été déconnectée par l'AP parce que ce dernier est "incapable de gérer toutes les stations connectées".
 
 > Quels codes/raisons justifient l'envoie de la trame à l'AP et pourquoi ?
 
-1, 8
+Les codes 1 et 8. D'après le message du code 8 (*Disassociated because sending station is leaving (or has left) BSS*), il est clair que c'est la station qui informe l'AP qu'elle a quitté le réseau.
 
 > Comment essayer de déauthentifier toutes les STA ?
 
-Mettre en adresse cible client (pour les codes 1, 4 et 5) l'adresse FF:FF:FF:FF:FF:FF qui est l'adresse de broadcast.
+Mettre en adresse cible client (pour les codes 1, 4 et 5) l'adresse broadcast, i.e. FF:FF:FF:FF:FF:FF.
 
 > Quelle est la différence entre le code 3 et le code 8 de la liste ?
 
