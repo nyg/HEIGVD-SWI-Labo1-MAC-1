@@ -25,7 +25,7 @@ Vous allez devoir faire des recherches sur internet pour apprendre à utiliser S
 
 __ATTENTION :__ Pour vos manipulations, il pourrait être important de bien fixer le canal lors de vos captures et/ou vos injections (à vous de déterminer si ceci est nécessaire pour les manipulations suivantes ou pas). Si vous en avez besoin, la méthode la plus sure est d'utiliser l'option :
 
-`--channel` de `airodump-ng`
+```--channel``` de ```airodump-ng```
 
 et de garder la fenêtre d'airodump ouverte en permanence pendant que vos scripts tournent ou vos manipulations sont effectuées.
 
@@ -88,35 +88,29 @@ Le corps de la trame (Frame body) contient, entre autres, un champ de deux octet
 | 39 | Requested from peer QSTA due to timeout                                                                                                                                              |
 | 40 | Peer QSTA does not support the requested cipher suite                                                                                                                                              |
 | 46-65535 | Reserved                                                                                                                                              |
-
-> a) **Utiliser la fonction de déauthentification de la suite aircrack, capturer les échanges et identifier le Reason code et son interpretation.**
->
+ 
+a) Utiliser la fonction de déauthentification de la suite aircrack, capturer les échanges et identifier le Reason code et son interpretation.
 
 __Question__ : quel code est utilisé par aircrack pour déauthentifier un client 802.11. Quelle est son interpretation ?
 
-Le code utilisé est le 0x7. Class 3 frame received from nonassociated station.
-
 __Question__ : A l'aide d'un filtre d'affichage, essayer de trouver d'autres trames de déauthentification dans votre capture. Avez-vous en trouvé d'autres ? Si oui, quel code contient-elle et quelle est son interpretation ?
 
-Avec Wireshark on peut utiliser le filtre suivant: `(wlan.fc.type eq 0) && (wlan.fc.type_subtype eq 12)`. On a trouvé les codes 3 (réseau quitté volontairement), 4 (réseau quitté à cause d'inactivité), 6.
-
-> b) **Développer un script en Python/Scapy capable de générer et envoyer des trames de déauthentification. Le script donne le choix entre des Reason codes différents (liste ci-après) et doit pouvoir déduire si le message doit être envoyé à la STA ou à l'AP :**
-> * 1 - Unspecified
-> * 4 - Disassociated due to inactivity
-> * 5 - Disassociated because AP is unable to handle all currently associated stations
-> * 8 - Deauthenticated because sending STA is leaving BSS
->
+b) Développer un script en Python/Scapy capable de générer et envoyer des trames de déauthentification. Le script donne le choix entre des Reason codes différents (liste ci-après) et doit pouvoir déduire si le message doit être envoyé à la STA ou à l'AP :
+* 1 - Unspecified
+* 4 - Disassociated due to inactivity
+* 5 - Disassociated because AP is unable to handle all currently associated stations
+* 8 - Deauthenticated because sending STA is leaving BSS
 
 __Question__ : quels codes/raisons justifient l'envoie de la trame à la STA cible et pourquoi ?
-1,4,5 - Je ne sai pas encore
+
 __Question__ : quels codes/raisons justifient l'envoie de la trame à l'AP et pourquoi ?
-8 - Je ne sais pas encore
+
 __Question__ : Comment essayer de déauthentifier toutes les STA ?
-Mettre en addresse cible client (pour les codes 1,4 et 5) l'adresse FF:FF:FF:FF:FF:FF
+
 __Question__ : Quelle est la différence entre le code 3 et le code 8 de la liste ?
-Une c'est l'AP qui informe et l'autre la STA ?
-__Question__ : Expliquer l'effet de cette attaque sur la cible.
-Elle est déconnectée du réseau, dans certains cas testé le client doit réentrer le mot de passe du WiFi.
+
+__Question__ : Expliquer l'effet de cette attaque sur la cible
+
 ### 2. Fake channel evil tween attack
 a)	Développer un script en Python/Scapy avec les fonctionnalités suivantes :
 
