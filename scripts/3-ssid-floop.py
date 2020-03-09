@@ -1,9 +1,5 @@
-import os
-import sys
-
-from scapy.layers.dot11 import Dot11, Dot11Beacon, Dot11Elt, RadioTap
-from scapy.sendrecv import sendp
-from scapy.volatile import RandString, RandMAC
+from scapy.all import *
+from scapy.layers.dot11 import Dot11Elt, Dot11Beacon, Dot11, RadioTap
 
 IFACE_ARG = 1
 SSID_ARG = 2
@@ -40,18 +36,17 @@ else:
 
 # inspiration https://www.4armed.com/blog/forging-wifi-beacon-frames-using-scapy/
 
-
 # common frame values
-beacon = Dot11Beacon(cap='ESS+privacy')
-rsn = Dot11Elt(ID='RSNinfo', info=(
-    '\x01\x00'  # RSN Version 1
-    '\x00\x0f\xac\x02'  # Group Cipher Suite : 00-0f-ac TKIP
-    '\x02\x00'  # 2 Pairwise Cipher Suites (next two lines)
-    '\x00\x0f\xac\x04'  # AES Cipher
-    '\x00\x0f\xac\x02'  # TKIP Cipher
-    '\x01\x00'  # 1 Authentication Key Managment Suite (line below)
-    '\x00\x0f\xac\x02'  # Pre-Shared Key
-    '\x00\x00'))  # RSN Capabilities (no extra capabilities)
+# beacon = Dot11Beacon(cap='ESS+privacy')
+# rsn = Dot11Elt(ID='RSNinfo', info=(
+#     '\x01\x00'  # RSN Version 1
+#     '\x00\x0f\xac\x02'  # Group Cipher Suite : 00-0f-ac TKIP
+#     '\x02\x00'  # 2 Pairwise Cipher Suites (next two lines)
+#     '\x00\x0f\xac\x04'  # AES Cipher
+#     '\x00\x0f\xac\x02'  # TKIP Cipher
+#     '\x01\x00'  # 1 Authentication Key Managment Suite (line below)
+#     '\x00\x0f\xac\x02'  # Pre-Shared Key
+#     '\x00\x00'))  # RSN Capabilities (no extra capabilities)
 
 
 def broadcast_ssids(ssids):
