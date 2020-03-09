@@ -1,5 +1,8 @@
 # SWI — Laboratoire 1
 
+* **Date** : 09.03.2020
+* **Auteurs** : Mickael Bonjour, Nikolaos Garanis.
+
 ## 1. Deauthentication attack
 
 > Quel code est utilisé par aircrack pour déauthentifier un client 802.11. Quelle est son interpretation ?
@@ -36,8 +39,23 @@ D'après cette [spécification](https://www.iith.ac.in/~tbr/teaching/docs/802.11
 
 La cible va être déconnectée du réseau Wifi, il est ainsi possible d'effectuer un déni de service en effectuant continuellement cette attaque (la cible ne restera jamais connectée au WiFi assez longtemps pour pouvoir profiter du service).
 
+### Exemple du script
+
+![](images/ex1.png)
+
 ## 2. Fake channel evil tween attack
 
 > Expliquer l'effet de cette attaque sur la cible
 
 Si la cible est déjà connectée à un réseau, cette attaque n'aura probablement pas d'effet. Par contre, si la cible est déconnectée de ce réseau (par exemple avec l'attaque 1), elle pourra être amenée à se connectée au réseau malicieux.
+
+### Exemple du script
+
+![](images/ex2.png)
+
+## 3. SSID flood attack
+
+### Exemple du script
+
+![](images/ex3a.png)
+<img src="images/ex3b.jpeg" style="zoom:40%" />
